@@ -13,6 +13,7 @@ class MyApp extends StatelessWidget {
     };
     return MaterialApp(
       title: Constant.APP_NAME,
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Constant.PRIMARY_COLOR),
       home: FutureBuilder(
           future: AuthService().isLogin(),

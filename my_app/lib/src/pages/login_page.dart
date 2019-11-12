@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:my_app/src/models/user.dart';
-import 'package:my_app/src/pages/home_page.dart';
 import 'package:my_app/src/services/auth_service.dart';
 import 'package:my_app/src/utils/constants.dart';
 import 'package:my_app/src/widgets/white_space.dart';
