@@ -24,6 +24,8 @@ class NetworkService{
 
       //youtube.youtubes.forEach((item) => print(item.title));
 
+      await Future.delayed(Duration(seconds: 2));
+
       return youtube.youtubes;
     } else {
       throw Exception('Failed to load Youtubes');

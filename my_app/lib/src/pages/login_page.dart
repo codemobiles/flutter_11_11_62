@@ -13,7 +13,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final user = User();
 
-  var formKey = GlobalKey<FormState>();
+  var _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -62,8 +62,8 @@ class _LoginPageState extends State<LoginPage> {
         color: Constant.PRIMARY_COLOR,
         textColor: Colors.white,
         onPressed: () async {
-          if (formKey.currentState.validate()) {
-            formKey.currentState.save();
+          if (_formKey.currentState.validate()) {
+            _formKey.currentState.save();
             print("username: ${user.username}, password: ${user.password}");
 
             final isSuccess = await AuthService().login(user: user); // async
@@ -87,7 +87,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Form buildForm() {
     return Form(
-      key: formKey,
+      key: _formKey,
       child: Column(
         children: <Widget>[
           TextFormField(
