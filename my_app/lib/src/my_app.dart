@@ -9,6 +9,7 @@ class MyApp extends StatelessWidget {
     var _route = <String, WidgetBuilder>{
       Constant.HOME_ROUTE: (context) => HomePage(),
       Constant.LOGIN_ROUTE: (context) => LoginPage(),
+      Constant.FAVORITE_ROUTE: (context) => FavoritePage(),
     };
     return MaterialApp(
       title: Constant.APP_NAME,

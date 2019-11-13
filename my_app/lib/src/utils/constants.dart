@@ -11,6 +11,7 @@ class Constant {
   static const String HOME_ROUTE = "/home";
   static const String LOGIN_ROUTE = "/login";
   static const String DETAIL_ROUTE = "/youtube detail";
+  static const String FAVORITE_ROUTE = "/favorite";
 
   //strings
   static const String APP_NAME = "MY APP";

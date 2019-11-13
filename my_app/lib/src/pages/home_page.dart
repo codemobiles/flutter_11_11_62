@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:my_app/src/models/youtube_response.dart';
 import 'package:my_app/src/services/network_service.dart';
+import 'package:my_app/src/utils/constants.dart';
+import 'package:transparent_image/transparent_image.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
@@ -48,12 +50,13 @@ class _HomePageState extends State<HomePage> {
                   key: _keyRefresh,
                   onRefresh: _refreshing,
                   child: ListView.builder(
+                    padding: EdgeInsets.only(bottom: 50),
                     itemBuilder: (context, index) {
                       final Youtube youtube = snapshot.data[index];
 
                       return Card(
                         margin:
-                            EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                        EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                         child: Column(
                           children: <Widget>[
                             _buildHeader(item: youtube),
@@ -82,7 +85,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  _buildHeader({@required Youtube item}) => ListTile(
+  _buildHeader({@required Youtube item}) =>
+      ListTile(
 //        leading: CircleAvatar(
 //          child: ClipRRect(
 //            borderRadius: BorderRadius.circular(45),
@@ -116,15 +120,19 @@ class _HomePageState extends State<HomePage> {
         ),
       );
 
-  _buildBody({Youtube item}) => GestureDetector(
+  _buildBody({Youtube item}) =>
+      GestureDetector(
         onTap: () {
           // deep link youtube
           _launchURL(item.id);
         },
-        child: Image.network(
-          item.youtubeImage,
-          height: 250,
+        child: FadeInImage.memoryNetwork(
+          placeholder: kTransparentImage,
+          image: item.youtubeImage,
+          height: 180,
+          width: double.infinity,
           fit: BoxFit.cover,
+          fadeInDuration: Duration(seconds: 1),
         ),
       );
 
@@ -138,7 +146,8 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  _buildFooter({Youtube item}) => Row(
+  _buildFooter({Youtube item}) =>
+      Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           FlatButton.icon(
@@ -160,11 +169,33 @@ class _HomePageState extends State<HomePage> {
     setState(() {});
   }
 
-  appBarSliver() => SliverAppBar(
+  appBarSliver() =>
+      SliverAppBar(
+//        floating: true,
+//        snap: true,
+//        pinned: true,
         title: Text("Title"),
         backgroundColor: Colors.blue,
+        expandedHeight: 200,
+        flexibleSpace: FlexibleSpaceBar(
+          title: Text("Marvel Lover"),
+          centerTitle: true,
+          collapseMode: CollapseMode.parallax,
+          background: Image.network(
+            "https://ichef.bbci.co.uk/news/410/cpsprodpb/BF0D/production/_106090984_2e39b218-c369-452e-b5be-d2476f9d8728.jpg",
+          ),
+        ),
         actions: <Widget>[
-          IconButton(icon: Icon(Icons.print), onPressed: (){},)
+          IconButton(
+            icon: Icon(Icons.favorite),
+            onPressed: () {
+              Navigator.pushNamed(context, Constant.FAVORITE_ROUTE);
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.print),
+            onPressed: () {},
+          )
         ],
       );
 }

@@ -71,6 +71,14 @@
 49-->/Users/iblurblur/Desktop/cm_flutter/my_app/android/app/src/main/AndroidManifest.xml:29:27-74
 50            </intent-filter>
 51        </activity>
-52    </application>
-53
-54</manifest>
+52        <activity
+52-->[:url_launcher] /Users/iblurblur/Desktop/cm_flutter/my_app/build/url_launcher/intermediates/library_manifest/debug/AndroidManifest.xml:8:9-11:74
+53            android:name="io.flutter.plugins.urllauncher.WebViewActivity"
+53-->[:url_launcher] /Users/iblurblur/Desktop/cm_flutter/my_app/build/url_launcher/intermediates/library_manifest/debug/AndroidManifest.xml:9:13-74
+54            android:exported="false"
+54-->[:url_launcher] /Users/iblurblur/Desktop/cm_flutter/my_app/build/url_launcher/intermediates/library_manifest/debug/AndroidManifest.xml:10:13-37
+55            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
+55-->[:url_launcher] /Users/iblurblur/Desktop/cm_flutter/my_app/build/url_launcher/intermediates/library_manifest/debug/AndroidManifest.xml:11:13-71
+56    </application>
+57
+58</manifest>
