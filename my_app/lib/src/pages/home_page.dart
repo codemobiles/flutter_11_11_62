@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:my_app/src/global_variable.dart';
 import 'package:my_app/src/models/youtube_response.dart';
 import 'package:my_app/src/services/network_service.dart';
 import 'package:my_app/src/utils/constants.dart';
@@ -56,7 +57,7 @@ class _HomePageState extends State<HomePage> {
 
                       return Card(
                         margin:
-                        EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                            EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                         child: Column(
                           children: <Widget>[
                             _buildHeader(item: youtube),
@@ -85,8 +86,15 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  _buildHeader({@required Youtube item}) =>
-      ListTile(
+  _buildHeader({@required Youtube item}) {
+    var isFavorite = false;
+    GlobalVariable.favoriteList.forEach((data) {
+      if (item.id == data.id) {
+        isFavorite = true;
+      }
+    });
+
+    return ListTile(
 //        leading: CircleAvatar(
 //          child: ClipRRect(
 //            borderRadius: BorderRadius.circular(45),
@@ -96,32 +104,57 @@ class _HomePageState extends State<HomePage> {
 //            ),
 //          ),
 //        ),
-        leading: ClipOval(
-          child: Image.network(
-            item.avatarImage,
-            fit: BoxFit.cover,
-            height: 45,
-            width: 45,
-          ),
+      leading: ClipOval(
+        child: Image.network(
+          item.avatarImage,
+          fit: BoxFit.cover,
+          height: 45,
+          width: 45,
         ),
-        title: Text(
-          item.title,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        subtitle: Text(
-          item.subtitle,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        trailing: IconButton(
-          icon: Icon(Icons.favorite_border),
-          onPressed: () {},
-        ),
-      );
+      ),
+      title: Text(
+        item.title,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      subtitle: Text(
+        item.subtitle,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      trailing: IconButton(
+        icon: isFavorite
+            ? Icon(
+                Icons.favorite,
+                color: Colors.red,
+              )
+            : Icon(Icons.favorite_border),
+        onPressed: () {
+          var isItem = false;
+          var index = 0;
 
-  _buildBody({Youtube item}) =>
-      GestureDetector(
+          GlobalVariable.favoriteList.asMap().forEach((_index, data) {
+            if (data.id == item.id) {
+              isItem = true;
+              index = _index;
+            }
+          });
+
+          if (isItem == true) {
+            GlobalVariable.favoriteList.removeAt(index);
+          } else {
+            GlobalVariable.favoriteList.add(item);
+          }
+
+          setState(() {
+
+          });
+        },
+      ),
+    );
+  }
+
+  _buildBody({Youtube item}) => GestureDetector(
         onTap: () {
           // deep link youtube
           _launchURL(item.id);
@@ -146,8 +179,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  _buildFooter({Youtube item}) =>
-      Row(
+  _buildFooter({Youtube item}) => Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           FlatButton.icon(
@@ -169,12 +201,11 @@ class _HomePageState extends State<HomePage> {
     setState(() {});
   }
 
-  appBarSliver() =>
-      SliverAppBar(
+  appBarSliver() => SliverAppBar(
 //        floating: true,
 //        snap: true,
 //        pinned: true,
-        title: Text("Title"),
+        title: Text("CodeMobiles Flutter"),
         backgroundColor: Colors.blue,
         expandedHeight: 200,
         flexibleSpace: FlexibleSpaceBar(
