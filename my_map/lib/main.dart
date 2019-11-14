@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
@@ -8,7 +9,16 @@ import 'package:location/location.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitDown,
+    DeviceOrientation.portraitUp,
+  ]);
+
+  return runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -33,22 +43,23 @@ class MapSampleState extends State<MapSample> {
   final Set<Marker> _markers = {};
 
   final _defaultLatLng =
-  CameraPosition(target: LatLng(13.7465354, 100.532752), zoom: 10);
+      CameraPosition(target: LatLng(13.7465354, 100.532752), zoom: 10);
+
+  StreamSubscription<LocationData> _locationSubscription;
 
   @override
   Widget build(BuildContext context) {
-    var bannerSize = MediaQuery
-        .of(context)
-        .size
-        .height * 0.2;
+    var bannerSize = MediaQuery.of(context).size.height * 0.2;
 
     return new Scaffold(
       body: Stack(
         children: <Widget>[
           _buildGoogleMap(bannerSize: bannerSize),
-          Container(
-            color: Colors.grey,
+          Image.network(
+            "https://miro.medium.com/max/11400/1*lS9ZqdEGZrRiTcL1JUgt9w.jpeg",
             height: bannerSize,
+            width: double.infinity,
+            fit: BoxFit.cover,
           ),
           Padding(
             padding: EdgeInsets.only(top: bannerSize + 22, right: 20),
@@ -87,8 +98,11 @@ class MapSampleState extends State<MapSample> {
                   ),
                   FloatingActionButton(
                     child: Icon(Icons.my_location),
+                    backgroundColor:
+                        _locationSubscription != null ? Colors.red : null,
                     onPressed: () {
                       oneTimeLocation();
+                      trackingLocation();
                     },
                   )
                 ],
@@ -109,11 +123,10 @@ class MapSampleState extends State<MapSample> {
     bool isShowInfo = false,
   }) {
     final ImageConfiguration imageConfiguration =
-    createLocalImageConfiguration(context);
+        createLocalImageConfiguration(context);
 
     BitmapDescriptor.fromAssetImage(imageConfiguration, pinAsset).then(
-          (bitmap) =>
-      {
+      (bitmap) => {
         _markers.add(
           Marker(
             markerId: MarkerId(markerId),
@@ -121,13 +134,13 @@ class MapSampleState extends State<MapSample> {
             position: position,
             infoWindow: isShowInfo
                 ? InfoWindow(
-              title: title,
-              snippet: snippet,
-              onTap: () {
-                _launchMaps(
-                    lat: position.latitude, lng: position.longitude);
-              },
-            )
+                    title: title,
+                    snippet: snippet,
+                    onTap: () {
+                      _launchMaps(
+                          lat: position.latitude, lng: position.longitude);
+                    },
+                  )
                 : null,
             icon: bitmap,
             onTap: () {
@@ -192,7 +205,11 @@ class MapSampleState extends State<MapSample> {
     _mapController.animateCamera(CameraUpdate.newLatLngZoom(position, 16));
   }
 
-
+  void clearMarker() {
+    if (_markers != null) {
+      _markers.clear();
+    }
+  }
 
   oneTimeLocation() async {
     try {
@@ -204,6 +221,52 @@ class MapSampleState extends State<MapSample> {
         print('Permission denied');
       }
       print('oneTimeLocation error: ${e.message}');
+    }
+  }
+
+  trackingLocation() async {
+    if (_locationSubscription != null) {
+      _locationSubscription.cancel();
+      _locationSubscription = null;
+      print('stop tacking location');
+      setState(() {});
+    } else {
+      Location _locationService = Location();
+      await _locationService.changeSettings(
+          accuracy: LocationAccuracy.HIGH, interval: 3000);
+
+      try {
+        if (await _locationService.serviceEnabled()) {
+          if (await _locationService.requestPermission()) {
+            // tracking
+            _locationSubscription = _locationService.onLocationChanged().listen(
+              (LocationData result) async {
+                setState(() {
+                  clearMarker();
+
+                  final latLng = LatLng(result.latitude, result.longitude);
+                  addMarker(markerId: result.time.toString(), position: latLng);
+
+                  animateCamera(position: latLng);
+                });
+              },
+            );
+          }
+        } else {
+          bool serviceStatusResult = await _locationService.requestService();
+          print("Service status activated after request: $serviceStatusResult");
+          if (serviceStatusResult) {
+            trackingLocation();
+          }
+        }
+      } on PlatformException catch (e) {
+        if (e.code == 'PERMISSION_DENIED') {
+          print('Permission denied');
+        } else if (e.code == 'SERVICE_STATUS_ERROR') {
+          print('Service error');
+        }
+        print('trackingLocation error: ${e.message}');
+      }
     }
   }
 }
